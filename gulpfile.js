@@ -62,12 +62,6 @@ function minifyCss(cb) {
 }
 
 // exports
-function build(cb) {
-  gulp.parallel(minifyHtml, minifyCss, minifyJs)
-
-  cb()
-}
-
 function start(cb) {
   browserSync.init({
     server: './build',
@@ -81,5 +75,5 @@ function start(cb) {
   cb()
 }
 
-exports.build = build
+exports.build = gulp.parallel(minifyHtml, minifyCss, minifyJs)
 exports.start = start
