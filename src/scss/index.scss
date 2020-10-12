@@ -1,22 +1,10 @@
+@import './reset';
+@import './variables';
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-:root {
-  --outline-color: #222;
-  --stroke-width: 0.4rem;
-  --border-style: var(--stroke-width) solid var(--outline-color);
-  --skin-color: #eecf44;
-  --mouth-color: #c6a579;
-  --mouth-highlight: #e3d5a3;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -28,7 +16,7 @@ html {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: var(--skin-color);
+  background: $skin-color;
 }
 
 .top {
@@ -43,7 +31,7 @@ html {
   width: 13rem;
   height: 13rem;
   border-radius: 50%;
-  border: var(--border-style);
+  border: $border-style;
   background: #fff;
   display: flex;
   justify-content: center;
@@ -62,7 +50,7 @@ html {
   transform: translateX(100%);
   width: 1.6rem;
   height: 1.6rem;
-  background: var(--outline-color);
+  background: $outline-color;
   border-radius: 50%;
 }
 
@@ -73,10 +61,10 @@ html {
   width: 8rem;
   height: 6rem;
   z-index: 5;
-  background: var(--skin-color);
+  background: $skin-color;
   border-top-right-radius: 999rem;
   border-bottom-right-radius: 999rem;
-  border: var(--border-style);
+  border: $border-style;
   border-left: none;
 }
 
@@ -88,8 +76,8 @@ html {
 
 .bottom > * {
   position: absolute;
-  border: var(--border-style);
-  background: var(--mouth-color);
+  border: $border-style;
+  background: $mouth-color;
 }
 
 .cheek {
@@ -119,7 +107,7 @@ html {
   border-left: none;
   border-bottom: none;
   border-top-right-radius: 999rem;
-  box-shadow: inset var(--mouth-highlight) -0.8rem 0;
+  box-shadow: inset $mouth-highlight -0.8rem 0;
 }
 
 .upper-lip {
@@ -131,7 +119,7 @@ html {
   border-left: none;
   border-top-right-radius: 999rem;
   border-bottom-right-radius: 999rem;
-  box-shadow: inset var(--mouth-highlight) -0.8rem 0;
+  box-shadow: inset $mouth-highlight -0.8rem 0;
 }
 
 .upper-lip::before,
@@ -145,7 +133,7 @@ html {
   height: 2.5rem;
   top: 0;
   right: -0.4rem;
-  border: var(--border-style);
+  border: $border-style;
   border-left: none;
   border-bottom: none;
   border-top-right-radius: 999rem;
@@ -155,7 +143,7 @@ html {
   z-index: 10;
   top: 100%;
   right: 4rem;
-  border: var(--border-style);
+  border: $border-style;
   width: 7rem;
   height: 0.8rem;
   border-bottom: none;
@@ -186,7 +174,7 @@ html {
   position: absolute;
   bottom: 0;
   right: 0;
-  border: var(--border-style);
+  border: $border-style;
   width: 5rem;
   height: 4rem;
   border-left: none;
@@ -208,8 +196,8 @@ html {
 .round-stroke::after {
   content: '';
   position: absolute;
-  width: var(--stroke-width);
-  height: var(--stroke-width);
-  background: var(--outline-color);
+  width: $stroke-width;
+  height: $stroke-width;
+  background: $outline-color;
   border-radius: 50%;
 }
