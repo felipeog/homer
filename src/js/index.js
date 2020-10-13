@@ -8,8 +8,55 @@ const maxTranslateValue = 160
 // state
 let intervalId = null
 
-// movements based on mouse move
-document.body.onmousemove = event => {
+// functions
+const isTouchDevice = () => {
+  // https://stackoverflow.com/a/4819886/10942224
+  const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ')
+  const mq = query => {
+    return !!window.matchMedia(query).matches
+  }
+
+  if (
+    'ontouchstart' in window ||
+    (window.DocumentTouch && document instanceof DocumentTouch)
+  ) {
+    return true
+  }
+
+  const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('')
+
+  return !!mq(query)
+}
+
+const randomMovement = () => {
+  intervalId = setInterval(() => {
+    const rotateValue = Math.random() * 360
+    const translateValue = Math.random() * maxTranslateValue
+
+    for (let i = 0; i < 2; i++) {
+      eyes[i].style.transform = `rotate(${rotateValue}deg)`
+      eyes[i].style.transition = `${transitionDuration}ms`
+
+      pupils[i].style.transform = `translateX(${translateValue}%)`
+      pupils[i].style.transition = `${transitionDuration}ms`
+    }
+  }, transitionDuration)
+}
+
+const clearRandomMovement = () => {
+  if (isTouchDevice()) return
+
+  clearInterval(intervalId)
+
+  for (let i = 0; i < 2; i++) {
+    eyes[i].style.transition = 'none'
+    pupils[i].style.transition = 'none'
+  }
+}
+
+const handleMouseMovement = event => {
+  if (isTouchDevice()) return
+
   const { top, left, width, height } = headTop.getBoundingClientRect()
   const { clientX: mouseX, clientY: mouseY, pageX, pageY } = event
 
@@ -31,28 +78,19 @@ document.body.onmousemove = event => {
   }
 }
 
-// clear random movements on mouse enter
-document.body.onmouseenter = () => {
-  clearInterval(intervalId)
-
-  for (let i = 0; i < 2; i++) {
-    eyes[i].style.transition = 'none'
-    pupils[i].style.transition = 'none'
+const init = () => {
+  if (isTouchDevice()) {
+    randomMovement()
   }
 }
 
+// movements based on mouse move
+document.body.onmousemove = handleMouseMovement
+
+// clear random movements on mouse enter
+document.body.onmouseenter = clearRandomMovement
+
 // random pupils movements on mouse leave
-document.body.onmouseleave = () => {
-  intervalId = setInterval(() => {
-    const rotateValue = Math.random() * 360
-    const translateValue = Math.random() * maxTranslateValue
+document.body.onmouseleave = randomMovement
 
-    for (let i = 0; i < 2; i++) {
-      eyes[i].style.transform = `rotate(${rotateValue}deg)`
-      eyes[i].style.transition = `${transitionDuration}ms`
-
-      pupils[i].style.transform = `translateX(${translateValue}%)`
-      pupils[i].style.transition = `${transitionDuration}ms`
-    }
-  }, transitionDuration)
-}
+window.onload = init
