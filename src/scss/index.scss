@@ -15,8 +15,13 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 24rem;
   min-height: 100vh;
   background: $skin-color;
+}
+
+.homer-head {
+  width: 24rem;
 }
 
 .top {
