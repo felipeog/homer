@@ -1,11 +1,12 @@
 'use strict'
 
-var autoprefixer = require('gulp-autoprefixer')
+var autoprefixer = require('autoprefixer')
 var babel = require('gulp-babel')
 var browserSync = require('browser-sync')
-var cssnano = require('gulp-cssnano')
+var cssnano = require('cssnano')
 var gulp = require('gulp')
 var htmlmin = require('gulp-htmlmin')
+var postcss = require('gulp-postcss')
 var sass = require('gulp-sass')
 var sourcemaps = require('gulp-sourcemaps')
 var uglify = require('gulp-uglify')
@@ -17,9 +18,11 @@ var scssDir = './src/scss/**/*.scss'
 
 // minifiers
 function minifyHtml(cb) {
+  var htmlminOptions = { collapseWhitespace: true }
+
   gulp
     .src(htmlDir)
-    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(htmlmin(htmlminOptions))
     .pipe(gulp.dest('./build'))
     .pipe(browserSync.stream())
 
@@ -27,14 +30,14 @@ function minifyHtml(cb) {
 }
 
 function minifyJs(cb) {
+  var babelOptions = {
+    presets: ['@babel/env'],
+  }
+
   gulp
     .src(jsDir)
     .pipe(sourcemaps.init())
-    .pipe(
-      babel({
-        presets: ['@babel/env'],
-      }),
-    )
+    .pipe(babel(babelOptions))
     .pipe(uglify())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./build/js'))
@@ -44,16 +47,13 @@ function minifyJs(cb) {
 }
 
 function minifyCss(cb) {
+  var postcssPlugins = [autoprefixer(), cssnano()]
+
   gulp
     .src(scssDir)
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    .pipe(
-      autoprefixer({
-        cascade: false,
-      }),
-    )
-    .pipe(cssnano())
+    .pipe(postcss(postcssPlugins))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./build/css'))
     .pipe(browserSync.stream())
@@ -63,9 +63,11 @@ function minifyCss(cb) {
 
 // exports
 function start(cb) {
-  browserSync.init({
+  var browserSyncOptions = {
     server: './build',
-  })
+  }
+
+  browserSync.init(browserSyncOptions)
 
   gulp.watch(htmlDir, minifyHtml)
   gulp.watch(scssDir, minifyCss)
