@@ -1,9 +1,6 @@
 // consts
 const headTop = document.querySelector('.top')
-const eyes = headTop.querySelectorAll('[class$=-eye]')
-const pupils = headTop.querySelectorAll('.pupil')
-const transitionDuration = 4000
-const maxTranslateValue = 160
+const pupils = Array.from(headTop.querySelectorAll('.pupil'))
 
 // state
 let intervalId = null
@@ -30,17 +27,16 @@ const isTouchDevice = () => {
 
 const randomMovement = () => {
   intervalId = setInterval(() => {
-    const rotateValue = Math.random() * 360
-    const translateValue = Math.random() * maxTranslateValue
+    const topValue = Math.random() * 4 - 2
+    const leftValue = Math.random() * 4 - 2
+    const randomDuration = Math.random() * 4000
 
-    for (let i = 0; i < 2; i++) {
-      eyes[i].style.transform = `rotate(${rotateValue}deg)`
-      eyes[i].style.transition = `${transitionDuration}ms`
-
-      pupils[i].style.transform = `translateX(${translateValue}%)`
-      pupils[i].style.transition = `${transitionDuration}ms`
-    }
-  }, transitionDuration)
+    pupils.forEach(pupil => {
+      pupil.style.top = `${topValue}rem`
+      pupil.style.left = `${leftValue}rem`
+      pupil.style.transition = `${randomDuration}ms`
+    })
+  }, 4000)
 }
 
 const clearRandomMovement = () => {
@@ -48,49 +44,48 @@ const clearRandomMovement = () => {
 
   clearInterval(intervalId)
 
-  for (let i = 0; i < 2; i++) {
-    eyes[i].style.transition = 'none'
-    pupils[i].style.transition = 'none'
-  }
+  pupils.forEach(pupil => {
+    pupil.style.transition = '100ms'
+  })
 }
 
 const handleMouseMovement = event => {
   if (isTouchDevice()) return
 
   const { top, left, width, height } = headTop.getBoundingClientRect()
-  const { clientX: mouseX, clientY: mouseY, pageX, pageY } = event
-
-  const headTopX = left + width / 2
-  const headTopY = top + height / 2
-
-  const mouseDistance = Math.hypot(mouseX - headTopX, mouseY - headTopY)
-  const translateValue =
-    mouseDistance * 0.5 > maxTranslateValue
-      ? maxTranslateValue
-      : mouseDistance * 0.5
-
-  const rad = Math.atan2(pageX - headTopX, pageY - headTopY)
-  const rotateValue = rad * (180 / Math.PI) * -1 + 90
-
-  for (let i = 0; i < 2; i++) {
-    pupils[i].style.transform = `translateX(${translateValue}%)`
-    eyes[i].style.transform = `rotate(${rotateValue}deg)`
+  const { clientX, clientY } = event
+  const mouse = {
+    x: clientX,
+    y: clientY,
   }
+  const headCenter = {
+    x: left + width / 2,
+    y: top + height / 2,
+  }
+  const pupil = {
+    top: mouse.y - headCenter.y,
+    left: mouse.x - headCenter.x,
+  }
+
+  const topValue = getDampanedValue(pupil.top)
+  const leftValue = getDampanedValue(pupil.left)
+
+  pupils.forEach(pupil => {
+    pupil.style.top = `${topValue}rem`
+    pupil.style.left = `${leftValue}rem`
+  })
 }
 
-const init = () => {
-  if (isTouchDevice()) {
-    randomMovement()
-  }
+const getDampanedValue = value => {
+  const squareRootDamp =
+    value < 0 ? Math.sqrt(Math.abs(value)) * -1 : Math.sqrt(value)
+  const multiplyDamp = squareRootDamp * 0.08
+
+  return multiplyDamp
 }
 
-// movements based on mouse move
+// events
 document.body.onmousemove = handleMouseMovement
-
-// clear random movements on mouse enter
 document.body.onmouseenter = clearRandomMovement
-
-// random pupils movements on mouse leave
 document.body.onmouseleave = randomMovement
-
-window.onload = init
+window.onload = randomMovement
