@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "gulp start",
+    "start": "gulp build && gulp start",
     "build": "gulp build"
   },
   "keywords": [],
