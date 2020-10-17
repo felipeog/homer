@@ -7,21 +7,23 @@ var cssnano = require('cssnano')
 var gulp = require('gulp')
 var htmlmin = require('gulp-htmlmin')
 var postcss = require('gulp-postcss')
+var pug = require('gulp-pug')
 var sass = require('gulp-sass')
 var sourcemaps = require('gulp-sourcemaps')
 var uglify = require('gulp-uglify')
 
 // consts
-var htmlDir = './src/*.html'
+var htmlDir = './src/pug/**/*.pug'
 var jsDir = './src/js/**/*.js'
 var scssDir = './src/scss/**/*.scss'
 
-// minifiers
-function minifyHtml(cb) {
+// build
+function buildHTML(cb) {
   var htmlminOptions = { collapseWhitespace: true, removeComments: true }
 
   gulp
     .src(htmlDir)
+    .pipe(pug())
     .pipe(htmlmin(htmlminOptions))
     .pipe(gulp.dest('./build'))
     .pipe(browserSync.stream())
@@ -29,7 +31,7 @@ function minifyHtml(cb) {
   cb()
 }
 
-function minifyJs(cb) {
+function buildJS(cb) {
   var babelOptions = {
     presets: ['@babel/env'],
   }
@@ -46,7 +48,7 @@ function minifyJs(cb) {
   cb()
 }
 
-function minifyCss(cb) {
+function buildCSS(cb) {
   var postcssPlugins = [autoprefixer(), cssnano()]
 
   gulp
@@ -61,7 +63,7 @@ function minifyCss(cb) {
   cb()
 }
 
-// exports
+// functions
 function start(cb) {
   var browserSyncOptions = {
     server: './build',
@@ -69,13 +71,14 @@ function start(cb) {
 
   browserSync.init(browserSyncOptions)
 
-  gulp.watch(htmlDir, minifyHtml)
-  gulp.watch(scssDir, minifyCss)
-  gulp.watch(jsDir, minifyJs)
+  gulp.watch(htmlDir, buildHTML)
+  gulp.watch(scssDir, buildCSS)
+  gulp.watch(jsDir, buildJS)
   gulp.watch([htmlDir, scssDir, jsDir]).on('change', browserSync.reload)
 
   cb()
 }
 
-exports.build = gulp.parallel(minifyHtml, minifyCss, minifyJs)
+// exports
+exports.build = gulp.parallel(buildHTML, buildCSS, buildJS)
 exports.start = start
