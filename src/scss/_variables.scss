@@ -4,3 +4,8 @@ $border-style: $stroke-width solid $outline-color;
 $skin-color: #eecf44;
 $mouth-color: #c6a579;
 $mouth-highlight: #e3d5a3;
+
+$head-width: 24rem;
+$eye-width: 13rem;
+$pupil-width: 1.6rem;
+$eye-center: (($eye-width - $pupil-width) / 2) - $stroke-width;
