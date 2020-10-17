@@ -18,7 +18,7 @@ var scssDir = './src/scss/**/*.scss'
 
 // minifiers
 function minifyHtml(cb) {
-  var htmlminOptions = { collapseWhitespace: true }
+  var htmlminOptions = { collapseWhitespace: true, removeComments: true }
 
   gulp
     .src(htmlDir)
