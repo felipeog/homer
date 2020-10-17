@@ -52,8 +52,9 @@ const clearRandomMovement = () => {
 const handleMouseMovement = event => {
   if (isTouchDevice()) return
 
-  const { top, left, width, height } = headTop.getBoundingClientRect()
   const { clientX, clientY } = event
+  const { top, left, width, height } = headTop.getBoundingClientRect()
+
   const mouse = {
     x: clientX,
     y: clientY,
@@ -67,8 +68,8 @@ const handleMouseMovement = event => {
     left: mouse.x - headCenter.x,
   }
 
-  const topValue = getDampanedValue(pupil.top)
-  const leftValue = getDampanedValue(pupil.left)
+  const topValue = getDampenedValue(pupil.top)
+  const leftValue = getDampenedValue(pupil.left)
 
   pupils.forEach(pupil => {
     pupil.style.top = `${topValue}rem`
@@ -76,12 +77,11 @@ const handleMouseMovement = event => {
   })
 }
 
-const getDampanedValue = value => {
-  const squareRootDamp =
-    value < 0 ? Math.sqrt(Math.abs(value)) * -1 : Math.sqrt(value)
-  const multiplyDamp = squareRootDamp * 0.08
+const getDampenedValue = value => {
+  const isNegative = value < 0
+  const dampenedValue = Math.sqrt(Math.abs(value)) * 0.08
 
-  return multiplyDamp
+  return isNegative ? dampenedValue * -1 : dampenedValue
 }
 
 // events
