@@ -9,7 +9,6 @@ var htmlmin = require('gulp-htmlmin')
 var postcss = require('gulp-postcss')
 var pug = require('gulp-pug')
 var sass = require('gulp-sass')
-var sourcemaps = require('gulp-sourcemaps')
 var uglify = require('gulp-uglify')
 
 // consts
@@ -37,12 +36,10 @@ function buildJS(cb) {
   }
 
   gulp
-    .src(jsDir)
-    .pipe(sourcemaps.init())
+    .src(jsDir, { sourcemaps: true })
     .pipe(babel(babelOptions))
     .pipe(uglify())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./build/js'))
+    .pipe(gulp.dest('./build/js', { sourcemaps: true }))
     .pipe(browserSync.stream())
 
   cb()
@@ -52,12 +49,10 @@ function buildCSS(cb) {
   var postcssPlugins = [autoprefixer(), cssnano()]
 
   gulp
-    .src(scssDir)
-    .pipe(sourcemaps.init())
+    .src(scssDir, { sourcemaps: true })
     .pipe(sass().on('error', sass.logError))
     .pipe(postcss(postcssPlugins))
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./build/css'))
+    .pipe(gulp.dest('./build/css', { sourcemaps: true }))
     .pipe(browserSync.stream())
 
   cb()
