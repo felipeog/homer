@@ -1,3 +1,5 @@
+const { isTouchDevice } = require('./utils/isTouchDevice')
+
 // consts
 const headTop = document.querySelector('.top')
 const pupils = Array.from(headTop.querySelectorAll('.pupil'))
@@ -6,52 +8,36 @@ const pupils = Array.from(headTop.querySelectorAll('.pupil'))
 let intervalId = null
 
 // functions
-const isTouchDevice = () => {
-  // https://stackoverflow.com/a/4819886/10942224
-  const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ')
-  const mq = query => {
-    return !!window.matchMedia(query).matches
-  }
+function getDampenedValue(value) {
+  const isNegative = value < 0
+  const dampenedValue = Math.sqrt(Math.abs(value)) * 0.08
 
-  if (
-    'ontouchstart' in window ||
-    (window.DocumentTouch && document instanceof DocumentTouch)
-  ) {
-    return true
-  }
-
-  const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('')
-
-  return !!mq(query)
+  return isNegative ? dampenedValue * -1 : dampenedValue
 }
 
-const randomMovement = () => {
+function randomMovement() {
   intervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
-    const randomDuration = Math.random() * 4000
+    const transitionDuration = Math.random() * 4000
 
-    pupils.forEach(pupil => {
+    pupils.forEach((pupil) => {
       pupil.style.top = `${topValue}rem`
       pupil.style.left = `${leftValue}rem`
-      pupil.style.transition = `${randomDuration}ms`
+      pupil.style.transition = `${transitionDuration}ms`
     })
   }, 4000)
 }
 
-const clearRandomMovement = () => {
-  if (isTouchDevice()) return
-
+function clearRandomMovement() {
   clearInterval(intervalId)
 
-  pupils.forEach(pupil => {
+  pupils.forEach((pupil) => {
     pupil.style.transition = '100ms'
   })
 }
 
-const handleMouseMovement = event => {
-  if (isTouchDevice()) return
-
+function handleMouseMovement(event) {
   const { clientX, clientY } = event
   const { top, left, width, height } = headTop.getBoundingClientRect()
 
@@ -71,21 +57,23 @@ const handleMouseMovement = event => {
   const topValue = getDampenedValue(pupil.top)
   const leftValue = getDampenedValue(pupil.left)
 
-  pupils.forEach(pupil => {
+  pupils.forEach((pupil) => {
     pupil.style.top = `${topValue}rem`
     pupil.style.left = `${leftValue}rem`
   })
 }
 
-const getDampenedValue = value => {
-  const isNegative = value < 0
-  const dampenedValue = Math.sqrt(Math.abs(value)) * 0.08
+function init() {
+  if (isTouchDevice()) {
+    return randomMovement()
+  }
 
-  return isNegative ? dampenedValue * -1 : dampenedValue
+  document.body.onmousemove = handleMouseMovement
+  document.body.onmouseenter = clearRandomMovement
+  document.body.onmouseleave = randomMovement
+
+  randomMovement()
 }
 
 // events
-document.body.onmousemove = handleMouseMovement
-document.body.onmouseenter = clearRandomMovement
-document.body.onmouseleave = randomMovement
-window.onload = randomMovement
+window.onload = init
