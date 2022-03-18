@@ -1,10 +1,16 @@
-const { isTouchDevice } = require('./utils/isTouchDevice')
+import { isTouchDevice } from './utils/isTouchDevice'
 
 // consts
 const headTop = document.querySelector('.top')
 const pupils = Array.from(headTop.querySelectorAll('.pupil'))
+const mouseStates = {
+  initial: 'initial',
+  outside: 'outside',
+  inside: 'inside',
+}
 
 // state
+let currentMouseState = mouseStates.initial
 let intervalId = null
 
 // functions
@@ -16,6 +22,15 @@ function getDampenedValue(value) {
 }
 
 function randomMovement() {
+  if (
+    currentMouseState !== mouseStates.initial &&
+    currentMouseState !== mouseStates.inside
+  ) {
+    return
+  }
+
+  currentMouseState = mouseStates.outside
+
   intervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
@@ -30,6 +45,12 @@ function randomMovement() {
 }
 
 function clearRandomMovement() {
+  if (currentMouseState !== mouseStates.outside) {
+    return
+  }
+
+  currentMouseState = mouseStates.inside
+
   clearInterval(intervalId)
 
   pupils.forEach((pupil) => {
@@ -38,6 +59,10 @@ function clearRandomMovement() {
 }
 
 function handleMouseMovement(event) {
+  if (currentMouseState !== mouseStates.inside) {
+    clearRandomMovement()
+  }
+
   const { clientX, clientY } = event
   const { top, left, width, height } = headTop.getBoundingClientRect()
 
