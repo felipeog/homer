@@ -3,8 +3,8 @@ import { createMachine, interpret } from 'xstate'
 import { isTouchDevice } from './utils/isTouchDevice'
 
 // consts
-const headTop = document.querySelector('.top')
-const pupils = Array.from(headTop.querySelectorAll('.pupil'))
+const headTop = document.querySelector<HTMLElement>('.top')
+const pupils = Array.from(headTop.querySelectorAll<HTMLElement>('.pupil'))
 
 // state machine
 const mouseStateMachine = createMachine({
@@ -41,10 +41,10 @@ const mouseStateService = interpret(mouseStateMachine).onTransition((state) => {
 })
 
 // state
-let randomMovementIntervalId = null
+let randomMovementIntervalId: number = null
 
 // functions
-function getDampenedValue(value) {
+function getDampenedValue(value: number) {
   const isNegative = value < 0
   const dampenedValue = Math.sqrt(Math.abs(value)) * 0.08
 
@@ -73,7 +73,7 @@ function stopRandomMovement() {
   })
 }
 
-function handleMouseMove(event) {
+function handleMouseMove(event: MouseEvent) {
   if (mouseStateService.getSnapshot().value === 'outside') {
     mouseStateService.send({ type: 'INSIDE' })
   }
