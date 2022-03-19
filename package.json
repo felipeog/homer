@@ -2,7 +2,7 @@
   "name": "homer",
   "scripts": {
     "start": "parcel src/pug/index.pug",
-    "build": "parcel build"
+    "build": "parcel build src/pug/index.pug"
   },
   "dependencies": {
     "xstate": "^4.30.6"
@@ -12,5 +12,4 @@
     "@parcel/transformer-sass": "^2.3.2",
     "parcel": "^2.3.2"
   }
-  
 }

@@ -8,4 +8,4 @@ $mouth-highlight: #e3d5a3;
 $head-width: 24rem;
 $eye-width: 13rem;
 $pupil-width: 1.6rem;
-$eye-center: (calc($eye-width - $pupil-width) / 2) - $stroke-width;
+$eye-center: calc(calc($eye-width - $pupil-width) / 2) - $stroke-width;
