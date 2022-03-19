@@ -1,16 +1,45 @@
+import { createMachine, interpret } from 'xstate'
+
 import { isTouchDevice } from './utils/isTouchDevice'
+
+const mouseStateMachine = createMachine({
+  id: 'mouse-state',
+  initial: 'outside',
+  states: {
+    inside: {
+      on: {
+        OUTSIDE: { target: 'outside' },
+      },
+    },
+    outside: {
+      on: {
+        INSIDE: { target: 'inside' },
+      },
+    },
+  },
+})
+
+const mouseStateService = interpret(mouseStateMachine).onTransition((state) => {
+  switch (state.value) {
+    case 'outside':
+      startRandomMovement()
+      break
+
+    case 'inside':
+      stopRandomMovement()
+      break
+
+    default:
+      console.error('Invalid state.value: ', state.value)
+      break
+  }
+})
 
 // consts
 const headTop = document.querySelector('.top')
 const pupils = Array.from(headTop.querySelectorAll('.pupil'))
-const mouseStates = {
-  initial: 'initial',
-  outside: 'outside',
-  inside: 'inside',
-}
 
 // state
-let currentMouseState = mouseStates.initial
 let intervalId = null
 
 // functions
@@ -21,16 +50,7 @@ function getDampenedValue(value) {
   return isNegative ? dampenedValue * -1 : dampenedValue
 }
 
-function randomMovement() {
-  if (
-    currentMouseState !== mouseStates.initial &&
-    currentMouseState !== mouseStates.inside
-  ) {
-    return
-  }
-
-  currentMouseState = mouseStates.outside
-
+function startRandomMovement() {
   intervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
@@ -44,13 +64,7 @@ function randomMovement() {
   }, 4_000)
 }
 
-function clearRandomMovement() {
-  if (currentMouseState !== mouseStates.outside) {
-    return
-  }
-
-  currentMouseState = mouseStates.inside
-
+function stopRandomMovement() {
   clearInterval(intervalId)
 
   pupils.forEach((pupil) => {
@@ -58,9 +72,9 @@ function clearRandomMovement() {
   })
 }
 
-function handleMouseMovement(event) {
-  if (currentMouseState !== mouseStates.inside) {
-    clearRandomMovement()
+function handleMouseMove(event) {
+  if (mouseStateService.getSnapshot().value === 'outside') {
+    mouseStateService.send({ type: 'INSIDE' })
   }
 
   const { clientX, clientY } = event
@@ -88,16 +102,22 @@ function handleMouseMovement(event) {
   })
 }
 
+function handleMouseEnter() {
+  mouseStateService.send({ type: 'INSIDE' })
+}
+
+function handleMouseLeave() {
+  mouseStateService.send({ type: 'OUTSIDE' })
+}
+
 function init() {
-  if (isTouchDevice()) {
-    return randomMovement()
+  if (!isTouchDevice()) {
+    document.body.onmousemove = handleMouseMove
+    document.body.onmouseenter = handleMouseEnter
+    document.body.onmouseleave = handleMouseLeave
   }
 
-  document.body.onmousemove = handleMouseMovement
-  document.body.onmouseenter = clearRandomMovement
-  document.body.onmouseleave = randomMovement
-
-  randomMovement()
+  mouseStateService.start()
 }
 
 // events
