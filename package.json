@@ -4,9 +4,13 @@
     "start": "parcel src/pug/index.pug",
     "build": "parcel build"
   },
+  "dependencies": {
+    "xstate": "^4.30.6"
+  },
   "devDependencies": {
     "@parcel/transformer-pug": "^2.3.2",
     "@parcel/transformer-sass": "^2.3.2",
     "parcel": "^2.3.2"
   }
+  
 }
