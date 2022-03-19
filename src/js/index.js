@@ -34,14 +34,14 @@ function randomMovement() {
   intervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
-    const transitionDuration = Math.random() * 4000
+    const transitionDuration = Math.random() * 4_000
 
     pupils.forEach((pupil) => {
       pupil.style.top = `${topValue}rem`
       pupil.style.left = `${leftValue}rem`
       pupil.style.transition = `${transitionDuration}ms`
     })
-  }, 4000)
+  }, 4_000)
 }
 
 function clearRandomMovement() {
