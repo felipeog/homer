@@ -2,6 +2,11 @@ import { createMachine, interpret } from 'xstate'
 
 import { isTouchDevice } from './utils/isTouchDevice'
 
+// consts
+const headTop = document.querySelector('.top')
+const pupils = Array.from(headTop.querySelectorAll('.pupil'))
+
+// state machine
 const mouseStateMachine = createMachine({
   id: 'mouse-state',
   initial: 'outside',
@@ -35,12 +40,8 @@ const mouseStateService = interpret(mouseStateMachine).onTransition((state) => {
   }
 })
 
-// consts
-const headTop = document.querySelector('.top')
-const pupils = Array.from(headTop.querySelectorAll('.pupil'))
-
 // state
-let intervalId = null
+let randomMovementIntervalId = null
 
 // functions
 function getDampenedValue(value) {
@@ -51,7 +52,7 @@ function getDampenedValue(value) {
 }
 
 function startRandomMovement() {
-  intervalId = setInterval(() => {
+  randomMovementIntervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
     const transitionDuration = Math.random() * 4_000
@@ -65,7 +66,7 @@ function startRandomMovement() {
 }
 
 function stopRandomMovement() {
-  clearInterval(intervalId)
+  clearInterval(randomMovementIntervalId)
 
   pupils.forEach((pupil) => {
     pupil.style.transition = '100ms'
@@ -79,7 +80,6 @@ function handleMouseMove(event) {
 
   const { clientX, clientY } = event
   const { top, left, width, height } = headTop.getBoundingClientRect()
-
   const mouse = {
     x: clientX,
     y: clientY,
@@ -92,7 +92,6 @@ function handleMouseMove(event) {
     top: mouse.y - headCenter.y,
     left: mouse.x - headCenter.x,
   }
-
   const topValue = getDampenedValue(pupil.top)
   const leftValue = getDampenedValue(pupil.left)
 
