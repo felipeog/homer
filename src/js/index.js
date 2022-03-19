@@ -1,17 +1,47 @@
+import { createMachine, interpret } from 'xstate'
+
 import { isTouchDevice } from './utils/isTouchDevice'
 
 // consts
 const headTop = document.querySelector('.top')
 const pupils = Array.from(headTop.querySelectorAll('.pupil'))
-const mouseStates = {
-  initial: 'initial',
-  outside: 'outside',
-  inside: 'inside',
-}
+
+// state machine
+const mouseStateMachine = createMachine({
+  id: 'mouse-state',
+  initial: 'outside',
+  states: {
+    inside: {
+      on: {
+        OUTSIDE: { target: 'outside' },
+      },
+    },
+    outside: {
+      on: {
+        INSIDE: { target: 'inside' },
+      },
+    },
+  },
+})
+
+const mouseStateService = interpret(mouseStateMachine).onTransition((state) => {
+  switch (state.value) {
+    case 'outside':
+      startRandomMovement()
+      break
+
+    case 'inside':
+      stopRandomMovement()
+      break
+
+    default:
+      console.error('Invalid state.value: ', state.value)
+      break
+  }
+})
 
 // state
-let currentMouseState = mouseStates.initial
-let intervalId = null
+let randomMovementIntervalId = null
 
 // functions
 function getDampenedValue(value) {
@@ -21,17 +51,8 @@ function getDampenedValue(value) {
   return isNegative ? dampenedValue * -1 : dampenedValue
 }
 
-function randomMovement() {
-  if (
-    currentMouseState !== mouseStates.initial &&
-    currentMouseState !== mouseStates.inside
-  ) {
-    return
-  }
-
-  currentMouseState = mouseStates.outside
-
-  intervalId = setInterval(() => {
+function startRandomMovement() {
+  randomMovementIntervalId = setInterval(() => {
     const topValue = Math.random() * 4 - 2
     const leftValue = Math.random() * 4 - 2
     const transitionDuration = Math.random() * 4_000
@@ -44,28 +65,21 @@ function randomMovement() {
   }, 4_000)
 }
 
-function clearRandomMovement() {
-  if (currentMouseState !== mouseStates.outside) {
-    return
-  }
-
-  currentMouseState = mouseStates.inside
-
-  clearInterval(intervalId)
+function stopRandomMovement() {
+  clearInterval(randomMovementIntervalId)
 
   pupils.forEach((pupil) => {
     pupil.style.transition = '100ms'
   })
 }
 
-function handleMouseMovement(event) {
-  if (currentMouseState !== mouseStates.inside) {
-    clearRandomMovement()
+function handleMouseMove(event) {
+  if (mouseStateService.getSnapshot().value === 'outside') {
+    mouseStateService.send({ type: 'INSIDE' })
   }
 
   const { clientX, clientY } = event
   const { top, left, width, height } = headTop.getBoundingClientRect()
-
   const mouse = {
     x: clientX,
     y: clientY,
@@ -78,7 +92,6 @@ function handleMouseMovement(event) {
     top: mouse.y - headCenter.y,
     left: mouse.x - headCenter.x,
   }
-
   const topValue = getDampenedValue(pupil.top)
   const leftValue = getDampenedValue(pupil.left)
 
@@ -88,16 +101,22 @@ function handleMouseMovement(event) {
   })
 }
 
+function handleMouseEnter() {
+  mouseStateService.send({ type: 'INSIDE' })
+}
+
+function handleMouseLeave() {
+  mouseStateService.send({ type: 'OUTSIDE' })
+}
+
 function init() {
-  if (isTouchDevice()) {
-    return randomMovement()
+  if (!isTouchDevice()) {
+    document.body.onmousemove = handleMouseMove
+    document.body.onmouseenter = handleMouseEnter
+    document.body.onmouseleave = handleMouseLeave
   }
 
-  document.body.onmousemove = handleMouseMovement
-  document.body.onmouseenter = clearRandomMovement
-  document.body.onmouseleave = randomMovement
-
-  randomMovement()
+  mouseStateService.start()
 }
 
 // events
