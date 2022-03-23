@@ -1,0 +1,191 @@
+.homer-head {
+  width: $head-width;
+}
+
+.top {
+  position: relative;
+  width: $head-width;
+  height: $eye-width;
+}
+
+.left-eye,
+.right-eye {
+  position: absolute;
+  width: $eye-width;
+  height: $eye-width;
+  border-radius: 50%;
+  border: $border-style;
+  background: #fff;
+}
+
+.left-eye {
+  z-index: 10;
+}
+
+.right-eye {
+  right: 0;
+}
+
+.pupil {
+  width: $pupil-width;
+  height: $pupil-width;
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  transform: translate($eye-center, $eye-center);
+  background: $outline-color;
+  border-radius: 50%;
+}
+
+.nose {
+  position: absolute;
+  bottom: -2rem;
+  left: 12rem;
+  width: 8rem;
+  height: 6rem;
+  z-index: 5;
+  background: $skin-color;
+  border-top-right-radius: 999rem;
+  border-bottom-right-radius: 999rem;
+  border: $border-style;
+  border-left: none;
+}
+
+.bottom {
+  position: relative;
+  width: $head-width;
+  height: 22rem;
+
+  > * {
+    position: absolute;
+    border: $border-style;
+    background: $mouth-color;
+  }
+}
+
+.cheek {
+  width: 12rem;
+  height: 20.4rem;
+  top: 1.6rem;
+  border-right: none;
+  border-top-left-radius: 999rem;
+  border-bottom-left-radius: 999rem;
+}
+
+.chin {
+  width: 7rem;
+  height: 5.8rem;
+  bottom: 0;
+  left: 10rem;
+  border-top: none;
+  border-left: none;
+  border-bottom-right-radius: 999rem;
+}
+
+.philtrum {
+  width: 12rem;
+  height: 9rem;
+  top: 1.6rem;
+  right: 1rem;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 999rem;
+  box-shadow: inset $mouth-highlight -0.8rem 0;
+}
+
+.round-stroke {
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: $stroke-width;
+    height: $stroke-width;
+    background: $outline-color;
+    border-radius: 50%;
+  }
+}
+
+.upper-lip {
+  width: 12rem;
+  height: 5rem;
+  top: 9rem;
+  right: 0;
+  border-top: none;
+  border-left: none;
+  border-top-right-radius: 999rem;
+  border-bottom-right-radius: 999rem;
+  box-shadow: inset $mouth-highlight -0.8rem 0;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+  }
+
+  &::before {
+    width: 2.8rem;
+    height: 2.5rem;
+    top: 0;
+    right: -0.4rem;
+    border: $border-style;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 999rem;
+  }
+
+  &::after {
+    z-index: 10;
+    top: 100%;
+    right: 4rem;
+    border: $border-style;
+    width: 7rem;
+    height: 0.8rem;
+    border-bottom: none;
+    border-right: none;
+    border-top-left-radius: 999rem;
+  }
+
+  .round-stroke {
+    &::before {
+      right: 2.3rem;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.lower-lip {
+  width: 9.2rem;
+  height: 4rem;
+  bottom: 4.4rem;
+  right: 4.2rem;
+  border: none;
+  border-bottom-right-radius: 999rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: $border-style;
+    width: 5rem;
+    height: 4rem;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 999rem;
+  }
+
+  .round-stroke {
+    &::before {
+      top: 0.6rem;
+      left: 2rem;
+    }
+
+    &::after {
+      bottom: 0;
+      left: 3.9rem;
+    }
+  }
+}
