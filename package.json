@@ -1,7 +1,7 @@
 {
   "name": "homer",
   "scripts": {
-    "start": "parcel src/pug/index.pug",
+    "start": "parcel src/pug/index.pug --no-cache",
     "build": "parcel build src/pug/index.pug"
   },
   "dependencies": {
